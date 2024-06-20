@@ -48,40 +48,42 @@ describe('Coding Challenge', () => {
     })
 
     it('Displays 4 Options', () => {
-        expect(wrapper.text()).toContain('OPTION 1')
-        expect(wrapper.text()).toContain('OPTION 2')
-        expect(wrapper.text()).toContain('OPTION 3')
-        expect(wrapper.text()).toContain('OPTION 4')
+        expect(wrapper.text()).toContain('OPTION 1').toBeTruthy()
+        expect(wrapper.text()).toContain('OPTION 2').toBeTruthy()
+        expect(wrapper.text()).toContain('OPTION 3').toBeTruthy()
+        expect(wrapper.text()).toContain('OPTION 4').toBeTruthy()
     })
     it('Prepopulates with Sample Data', () => {
-        expect(wrapper.find('.strike_price').element.value).toEqual(sampleData[0].strike_price.toString())
-        expect(wrapper.find('.type').element.value).toEqual(sampleData[0].type)
-        expect(wrapper.find('.bid').element.value).toEqual(sampleData[0].bid.toString())
-        expect(wrapper.find('.ask').element.value).toEqual(sampleData[0].ask.toString())
-        expect(wrapper.find('.long_short').element.value).toEqual(sampleData[0].long_short)
-        expect(wrapper.find('.expiration_date').element.value).toEqual(sampleData[0].expiration_date.toString())
+        expect(wrapper.find('.strike_price').element.value).toEqual(sampleData[0].strike_price.toString()).toBeTruthy()
+        expect(wrapper.find('.type').element.value).toEqual(sampleData[0].type).toBeTruthy()
+        expect(wrapper.find('.bid').element.value).toEqual(sampleData[0].bid.toString()).toBeTruthy()
+        expect(wrapper.find('.ask').element.value).toEqual(sampleData[0].ask.toString()).toBeTruthy()
+        expect(wrapper.find('.long_short').element.value).toEqual(sampleData[0].long_short).toBeTruthy()
+        expect(wrapper.find('.expiration_date').element.value).toEqual(sampleData[0].expiration_date.toString()).toBeTruthy()
     })
+    it('Loads Graph, etc. upon Button Click', async () => {
+      const generateButton = wrapper.find('#generate_button')
+      expect(wrapper.find('svg').isVisible()).toBeFalsy()
+      expect(wrapper.vm.maxProfit).toEqual(-1)
+      await generateButton.trigger('submit')
+      expect(wrapper.find('svg').isVisible()).toBeTruthy()
+      expect(+wrapper.vm.maxProfit).not.toEqual(-1)
+  })
     it('Removes an Option upon Clicking Remove Option', async () => {
-      expect(wrapper.vm.optionsData.length === 4).toBe(true)
+      expect(wrapper.vm.optionsData.length === 4).toBeTruthy()
       const removeButton = wrapper.find('button.remove')
       await removeButton.trigger('click')
-      expect(wrapper.vm.optionsData.length === 3).toBe(true)
+      expect(wrapper.vm.optionsData.length === 3).toBeTruthy()
     })
     it('Adds an Option upon Clicking Add Option', async () => {
       const addButton = wrapper.find('button.add')
       await addButton.trigger('click')
-      expect(wrapper.vm.optionsData.length === 4).toBe(true)
+      expect(wrapper.vm.optionsData.length === 4).toBeTruthy()
     })
-  //   it('Does Nothing upon Button Click When Form is Invalid', async () => {
-  //     wrapper.find('.strike_price').setValue(null)
-  //     const generateButton = wrapper.find('#generate_button')
-  //     await generateButton.trigger('click')
-  //     expect(wrapper.vm.maxProfit == -1).toBe(true) // variable maxProfit gets set to a positive number upon SUCCESSFUL button click
-  // })
-  //   it('Loads Graph upon Button Click', async () => {
-  //       const generateButton = wrapper.find('#generate_button')
-  //       // expect(wrapper.find('svg').isVisible()).toBe(false)
-  //       await generateButton.trigger('click')
-  //       expect(wrapper.vm.maxProfit === -1).toBe(false) // variable maxProfit gets set to a positive number upon button click
-  //   })
+    // it('Does Nothing upon Button Click When Form is Invalid', async () => {
+    //   wrapper.find('.strike_price').setValue(null)
+    //   const generateButton = wrapper.find('#generate_button')
+    //   await generateButton.trigger('submit')
+    //   expect(wrapper.vm.maxProfit).toEqual(-1) // variable maxProfit gets set to a positive number upon SUCCESSFUL button click
+    // })
 })
