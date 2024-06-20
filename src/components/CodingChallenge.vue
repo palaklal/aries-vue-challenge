@@ -289,6 +289,7 @@ export default {
   #legend {
     display: flex;
     flex-direction: column;
+    justify-content: space-around;
     border: 2px solid #0be881;
     height: 100px;
     padding: .5rem;
