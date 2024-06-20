@@ -180,7 +180,7 @@ export default {
       xAxis.selectAll(".tick text")
         .attr("font-size", "13px")
       xAxis.append("text")
-        .attr("fill", "#711aff")
+        .attr("fill", "#583689")
         .attr("x", width/2)
         .attr("y", 30)
         .attr("dy", "0.71em")
@@ -196,7 +196,7 @@ export default {
       yAxis.selectAll(".tick text")
         .attr("font-size", "13px")
       yAxis.append("text")
-        .attr("fill", "#711aff")
+        .attr("fill", "#583689")
         .attr("transform", "rotate(-90)")
         .attr("y", -50)
         .attr("x", (height/2 * -1))
@@ -212,7 +212,7 @@ export default {
         .datum(data)
         .attr("transform", "translate(50, -50)")
         .attr("fill", "none")
-        .attr("stroke", "#711aff")
+        .attr("stroke", "#583689")
         .attr("stroke-width", 2.5)
         .attr("d", line)
         
@@ -235,7 +235,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #33235E;
+    background-color: #35495E;
     margin-bottom: 0;
     border-bottom: 1px solid #cdd2d2;
   }
@@ -257,10 +257,10 @@ export default {
     background-color: #e8eaea;
   }
   .option-title {
-    border-bottom: 1px solid #33235E;
+    border-bottom: 1px solid #35495E;
     font-size: 18px;
     font-weight: 500;
-    color: #33235E;
+    color: #35495E;
     letter-spacing: 1px;
     margin-bottom: 10px;
   }
@@ -279,7 +279,7 @@ export default {
     border-width: 1px;
   }
   input:hover, select:hover, input:active, select:active, input:focus-visible, select:focus-visible {
-    border-color: #711aff;
+    border-color: #583689;
     border-width: 2.5px;
     box-shadow: 4px 4px 2px 2px #cdd2d2;
   }
@@ -291,7 +291,7 @@ export default {
     font-size: 14px;
     color: #28323e;
     text-transform: uppercase;
-    background-color: #0be881;
+    background-color: #41B883;
     padding: 4px 10px;
     margin-top: 30px;
     border-radius: 0px;
@@ -300,7 +300,7 @@ export default {
     cursor: pointer;
   }
   input[type="submit"]:hover, input[type="submit"]:active, button.add:hover, button.add:active {
-    background-color: #711aff;
+    background-color: #583689;
     color: #fff;
   }
   button {
@@ -310,7 +310,7 @@ export default {
     padding: 2px 7.5px;
   }
   button.remove {
-    background-color: #BF0019;
+    background-color: #b84841;
     color: #fff;
   }
   button.remove:hover, button.remove:active {
@@ -337,7 +337,7 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    border: 2px solid #0be881;
+    border: 2px solid #41B883;
     height: 100px;
     padding: .5rem;
     border-radius: 5px;
@@ -346,7 +346,7 @@ export default {
     min-width: 225px;
   }
   #legend:hover {
-    border-color: #711aff;
+    border-color: #583689;
     box-shadow: 4px 4px 2px 2px #cdd2d2;
   }
   #legend label {
