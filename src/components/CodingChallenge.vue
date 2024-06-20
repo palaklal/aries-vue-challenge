@@ -6,7 +6,7 @@
     </div>
     <form id="review-form" @submit.prevent="onSubmit">
       <div class="d-flex">
-        <div v-for="(option, key) in optionsData" :key="key" class="option col">
+        <div v-for="(option, key) in options" :key="key" class="option col">
           <span class="option-title">OPTION {{ key + 1 }}</span>
           <div class="col">
             <label>Strike Price: </label>
@@ -41,25 +41,168 @@
         </div>
       </div>
       <input class="button" type="submit" value="Generate Risk & Reward Graph">  
-    </form>  
+    </form>
+    <div v-show="showGraph" id="results">
+      <svg></svg>
+      <div id="legend">
+        <div><label>Max Profit: </label>${{maxProfit}}</div>
+        <div><label>Max Loss: </label>${{maxLoss}}</div>
+        <div><label>Break Even Points: </label><span v-if="breakEvenPoints != 'none'">$</span>{{breakEvenPoints}}</div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import * as d3 from 'd3'
+
 export default {
   name: 'CodingChallenge',
   props: {
     optionsData: Array
   },
+  mounted() {
+    window.addEventListener("resize", this.resizeGraph)
+  },
+  unmounted() {
+    window.removeEventListener("resize", this.resizeGraph)
+  },
   data() {
-    return this.optionsData
+    return {
+      options: this.optionsData,
+      showGraph: false,
+      maxProfit: -1,
+      maxLoss: -1,
+      breakEvenPoints: -1,
+      step: 1
+    }
   },
   methods: {
     onSubmit() {
-      console.log(this.optionsData)
+      this.showGraph = true
+      this.drawGraph()
     },
+    calculatePrices() {
+      const strikes = this.optionsData.map((option) => option.strike_price)
+      const minimum = Math.min(...strikes) * .5
+      const maximum = Math.max(...strikes) * 1.5
+      const step = (maximum - minimum) / 100
+      let prices = []
+      for (let currentPrice = minimum; currentPrice <= maximum; currentPrice += step) prices.push(currentPrice)
+      return prices
+    },
+    calculateProfits(prices) {
+      let profits = []
+      for (let price of prices) {
+        let totalProfit = 0
+        for (let option of this.optionsData) {
+          const { strike_price, type, bid, ask, long_short } = option
+          const premium = (bid + ask) / 2
+          let value = (type.toLocaleLowerCase() === 'call') ?  Math.max((price - strike_price), 0) : Math.max((strike_price - price), 0)
+          let profit = (long_short.toLocaleLowerCase() === 'long') ? (value - premium) : (premium - value)
+          totalProfit += profit
+        }
+        profits.push(totalProfit)
+      }
+      return profits
+    },
+    drawGraph() {
+      /* Given more time, I would add a hover functionality so users could see the the profit at an exact price */
+      const prices = this.calculatePrices()
+      const profits = this.calculateProfits(prices)
+      // Aggregate prices and profits into one data array
+      let data = []
+      for (let i = 0; i < prices.length; i++) {
+        data.push({price: prices[i], profit: profits[i]})
+      }
+      this.calculateLegend(data, profits)
+
+      const margin = {top: 20, right: 20, bottom: 20, left: 20}
+      const width = (window.innerWidth * .66) - margin.left - margin.right
+      const height = (window.innerHeight * .66) - margin.top - margin.bottom
+
+      d3.selectAll("svg > *").remove() // reset graph
+      const svg = d3
+        .select("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+      const g = svg.append("g")
+      
+      // Create the Graph Axes
+      const x = d3
+        .scaleLinear()
+        .domain(d3.extent(prices))
+        .rangeRound([0, width])
+
+      const y = d3
+        .scaleLinear()
+        .domain([this.maxLoss - (Math.abs(this.maxLoss) * .125), this.maxProfit * 1.125])
+        .rangeRound([height, 0])
+
+      // Create a Line
+      const line = d3
+        .line()
+        .x((d) => x(d.price))
+        .y((d) => y(d.profit))
+
+      // Append the Axes to the Graph
+      let dollarFormat = (d) => '$' + d
+
+      const xAxis = g.append("g")
+        .attr("transform", "translate(50," + (height - 50) + ")")
+        .call(d3.axisBottom(x).tickFormat(dollarFormat))
+      xAxis.selectAll(".tick text")
+        .attr("font-size", "13px")
+      xAxis.append("text")
+        .attr("fill", "#711aff")
+        .attr("x", width/2)
+        .attr("y", 30)
+        .attr("dy", "0.71em")
+        .attr("text-anchor", "end")
+        .attr("font-size", "15px")
+        .attr("font-weight", "600")
+        .attr("letter-spacing", "1px")
+        .text("Price")
+
+      const yAxis = g.append("g")
+        .attr("transform", "translate(50, -50)")
+        .call(d3.axisLeft(y).tickFormat(dollarFormat))
+      yAxis.selectAll(".tick text")
+        .attr("font-size", "13px")
+      yAxis.append("text")
+        .attr("fill", "#711aff")
+        .attr("transform", "rotate(-90)")
+        .attr("y", -50)
+        .attr("x", (height/2 * -1))
+        .attr("dy", "0.71em")
+        .attr("text-anchor", "end")
+        .attr("font-size", "15px")
+        .attr("font-weight", "600")
+        .attr("letter-spacing", "1px")
+        .text("Profit/Loss")
+
+      // Append a path to the Graph
+      g.append("path")
+        .datum(data)
+        .attr("transform", "translate(50, -50)")
+        .attr("fill", "none")
+        .attr("stroke", "#711aff")
+        .attr("stroke-width", 2.5)
+        .attr("d", line)
+        
+    },
+    calculateLegend(data, profits) {
+      this.maxProfit = Math.max(...profits).toFixed(2)
+      this.maxLoss = Math.min(...profits).toFixed(2)
+      const breakEvenProfitsAndPrices = data.filter((d) => d.profit.toFixed() == 0)
+      this.breakEvenPoints =  (breakEvenProfitsAndPrices.length > 0) ? breakEvenProfitsAndPrices.map((d) => d.price.toFixed(2)).join(', ') : 'none'
+    },
+    resizeGraph() {
+      if (this.showGraph) this.drawGraph()
+    }
   }
-  }
+}
 </script>
 
   <style scoped>
@@ -68,6 +211,7 @@ export default {
     align-items: center;
     background-color: #33235E;
     margin-bottom: 0;
+    border-bottom: 1px solid #cdd2d2;
   }
   #header img {
     height: 60px;
@@ -114,6 +258,7 @@ export default {
   input:hover, select:hover, input:active, select:active, input:focus-visible, select:focus-visible {
     border-color: #711aff;
     border-width: 2.5px;
+    box-shadow: 4px 4px 2px 2px #cdd2d2;
   }
   input[type='number'], input[type='date'] {
     padding-left: .5rem;
@@ -133,5 +278,32 @@ export default {
   input[type="submit"]:hover, input[type="submit"]:active {
     background-color: #711aff;
     color: #fff;
+  }
+  #results {
+    display: flex;
+    padding: 2.5rem 1.5rem;
+    justify-content: space-around;
+    background-color: #F5F6F6;
+  }
+  #legend {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid #0be881;
+    height: 100px;
+    padding: .5rem;
+    border-radius: 5px;
+    box-shadow: 3px 3px 2px 1px #cdd2d2;
+    background-color: #fff;
+    min-width: 225px;
+  }
+  #legend:hover {
+    border-color: #711aff;
+    box-shadow: 4px 4px 2px 2px #cdd2d2;
+  }
+  #legend label {
+    width: 9rem;
+    text-transform: capitalize;
+    color: #000;
+    font-weight: 500;
   }
 </style>
