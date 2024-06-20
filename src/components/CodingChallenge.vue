@@ -40,7 +40,7 @@
           </div>
         </div>
       </div>
-      <input class="button" type="submit" value="Generate Risk & Reward Graph">  
+      <input class="button" type="submit" value="Generate Risk & Reward Graph" id="generate_button">  
     </form>
     <div v-show="showGraph" id="results">
       <svg></svg>
@@ -127,6 +127,7 @@ export default {
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+        .attr("id", "graph")
       const g = svg.append("g")
       
       // Create the Graph Axes
