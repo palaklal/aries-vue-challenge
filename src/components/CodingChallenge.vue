@@ -303,7 +303,7 @@ export default {
     width: 17.5rem;
     cursor: pointer;
   }
-  input[type="submit"]:hover, input[type="submit"]:active, button.add-col:hover, button.add-col:active {
+  input[type="submit"]:hover, input[type="submit"]:active, button.add:hover, button.add:active {
     background-color: #711aff;
     color: #fff;
   }
