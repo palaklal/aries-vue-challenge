@@ -64,4 +64,7 @@ export default {
   height: 100vh;
   /* color: #2c3e50; */
 }
+body {
+  margin: 0;
+}
 </style>
