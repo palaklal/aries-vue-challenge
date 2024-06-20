@@ -1,7 +1,6 @@
 <template>
   <div>
     <div id="header">
-      <img src="../assets/logo.png">
       <h1>Options Profit Calculator</h1>
     </div>
     <form id="review-form" @submit.prevent="onSubmit">
@@ -210,19 +209,16 @@ export default {
   #header {
     display: flex;
     align-items: center;
+    justify-content: center;
     background-color: #33235E;
     margin-bottom: 0;
     border-bottom: 1px solid #cdd2d2;
-  }
-  #header img {
-    height: 60px;
-    margin: 15px;
   }
   #header h1 {
     font-size: 30px;
     color: white;
     font-weight: 600;
-    padding-top: 35px;
+    padding-top: 10px;
     letter-spacing: 1px;
   }
   .option {
