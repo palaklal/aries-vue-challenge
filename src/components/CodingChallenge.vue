@@ -245,6 +245,7 @@ export default {
   label {
     width: 125px;
     text-transform: lowercase;
+    display: inline-block;
   }
   input, select {
     margin: .5rem .75rem .5rem 0rem;
@@ -305,5 +306,15 @@ export default {
     text-transform: capitalize;
     color: #000;
     font-weight: 500;
+  }
+
+  .d-flex {
+    display: flex;
+  }
+  .col {
+    flex: 1 0 0%;
+    flex-grow: 1;
+    flex-shrink: 0;
+    flex-basis: 0%;
   }
 </style>
