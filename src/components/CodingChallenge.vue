@@ -38,6 +38,9 @@
             <label>Expiration Date: </label>
             <input type="date" class="expiration_date" v-model="option.expiration_date">
           </div>
+          <div class="col">
+            <button @click.prevent="remove(option)" :disabled="optionsData.length < 2" class="remove">Remove Option</button>
+          </div>
         </div>
       </div>
       <input class="button" type="submit" value="Generate Risk & Reward Graph" id="generate_button">  
@@ -78,6 +81,12 @@ export default {
     }
   },
   methods: {
+    remove(option) {
+      /* Given more time, I would add functionality to add back options too but for now/such a simple tool, they can refresh */
+      let oi = this.optionsData.findIndex((d) => d.strike_price === option.strike_price && d.type === option.type && d.bid === option.bid && d.ask === option.ask && d.long_short === option.long_short)
+      if (oi > -1) this.optionsData.splice(oi, 1)
+      else console.error('Could not find option to remove')
+    },
     onSubmit() {
       this.showGraph = true
       this.drawGraph()
@@ -248,7 +257,7 @@ export default {
     text-transform: lowercase;
     display: inline-block;
   }
-  input, select {
+  input, select, button {
     margin: .5rem .75rem .5rem 0rem;
     padding-left: 2.5px;
     border-radius: 3.5px;
@@ -265,7 +274,7 @@ export default {
   input[type='number'], input[type='date'] {
     padding-left: .5rem;
   }
-  input[type='submit'] {
+  input[type='submit'], button {
     font-weight: 600;
     font-size: 14px;
     color: #28323e;
@@ -276,10 +285,27 @@ export default {
     border-radius: 0px;
     border: none;
     width: 17.5rem;
+    cursor: pointer;
   }
   input[type="submit"]:hover, input[type="submit"]:active {
     background-color: #711aff;
     color: #fff;
+  }
+  button.remove {
+    font-size: 12px;
+    background-color: #BF0019;
+    width: 7.5rem;
+    color: #fff;
+    border-radius: 5px;
+    padding: 2px 7.5px;
+  }
+  button.remove:hover, button.remove:active {
+    opacity: .9;
+    border-width: 2.5px;
+    box-shadow: 4px 4px 2px 2px #cdd2d2;
+  }
+  button.remove:disabled {
+    opacity: .5;
   }
   #results {
     display: flex;
