@@ -10,36 +10,41 @@
           <span class="option-title">OPTION {{ key + 1 }}</span>
           <div class="col">
             <label>Strike Price: </label>
-            <input type="number" step=".01" class="strike_price" v-model="option.strike_price">
+            <input type="number" step=".01" class="strike_price" v-model="option.strike_price" required>
           </div>
           <div class="col">
             <label>Type: </label>
-            <select class="type" v-model="option.type">
+            <select class="type" v-model="option.type" required>
               <option>Call</option>
               <option>Put</option>
             </select>
           </div>
           <div class="col">
             <label>Bid: </label>
-            <input type="number" step=".01" class="bid" v-model="option.bid">
+            <input type="number" step=".01" class="bid" v-model="option.bid" required>
           </div>
           <div class="col">
             <label>Ask: </label>
-            <input type="number" step=".01" class="ask" v-model="option.ask">
+            <input type="number" step=".01" class="ask" v-model="option.ask" required>
           </div>
           <div class="col">
             <label>Long or Short: </label>
-            <select class="long_short" v-model="option.long_short">
+            <select class="long_short" v-model="option.long_short" required>
               <option>Long</option>
               <option>Short</option>
             </select>
           </div>
           <div class="col">
             <label>Expiration Date: </label>
-            <input type="date" class="expiration_date" v-model="option.expiration_date">
+            <input type="date" class="expiration_date" v-model="option.expiration_date" required>
           </div>
           <div class="col">
             <button @click.prevent="remove(option)" :disabled="optionsData.length < 2" class="remove">Remove Option</button>
+          </div>
+        </div>
+        <div v-if="optionsData.length < 4" class="option col">
+          <div class="add-col col">
+            <button @click.prevent="add()" class="add">Add Option</button>
           </div>
         </div>
       </div>
@@ -82,10 +87,21 @@ export default {
   },
   methods: {
     remove(option) {
-      /* Given more time, I would add functionality to add back options too but for now/such a simple tool, they can refresh */
       let oi = this.optionsData.findIndex((d) => d.strike_price === option.strike_price && d.type === option.type && d.bid === option.bid && d.ask === option.ask && d.long_short === option.long_short)
       if (oi > -1) this.optionsData.splice(oi, 1)
       else console.error('Could not find option to remove')
+    },
+    add() {
+      this.optionsData.push(
+        {
+          "strike_price": null, 
+          "type": "", 
+          "bid": null, 
+          "ask": null, 
+          "long_short": "", 
+          "expiration_date": ""
+        }
+      )
     },
     onSubmit() {
       this.showGraph = true
@@ -287,17 +303,19 @@ export default {
     width: 17.5rem;
     cursor: pointer;
   }
-  input[type="submit"]:hover, input[type="submit"]:active {
+  input[type="submit"]:hover, input[type="submit"]:active, button.add-col:hover, button.add-col:active {
     background-color: #711aff;
     color: #fff;
   }
-  button.remove {
+  button {
     font-size: 12px;
-    background-color: #BF0019;
     width: 7.5rem;
-    color: #fff;
     border-radius: 5px;
     padding: 2px 7.5px;
+  }
+  button.remove {
+    background-color: #BF0019;
+    color: #fff;
   }
   button.remove:hover, button.remove:active {
     opacity: .9;
@@ -306,6 +324,12 @@ export default {
   }
   button.remove:disabled {
     opacity: .5;
+  }
+  .add-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
   }
   #results {
     display: flex;
